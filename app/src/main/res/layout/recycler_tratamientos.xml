@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="90dp"
+    android:background="@drawable/inner_shadow_bkg"
+    android:layout_marginBottom="5dp">
+
+    <FrameLayout
+        android:id="@+id/recycler_tratamiento_dash"
+        android:layout_width="40dp"
+        android:layout_height="5dp"
+        android:background="#8ef1a0"
+        android:layout_gravity="center_vertical"
+        android:layout_marginLeft="30dp"/>
+
+    <TextView
+        android:id="@+id/recycler_tratamiento_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginLeft="100dp"
+        android:text="CELULITIS"
+        android:textColor="#ffffff"
+        android:textSize="32sp" />
+
+</FrameLayout>

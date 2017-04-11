@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.olmos.ingemed.MainActivity">
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/background"
+        android:scaleType="fitXY" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="54dp"
+            android:background="@drawable/background_top">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="14dp"
+                android:text="VITA RF 150"
+                android:textColor="#ffffff"
+                android:textSize="24.9sp" />
+
+        </FrameLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="20dp"
+                android:layout_marginLeft="30dp"
+                android:layout_marginRight="30dp"
+                android:layout_marginTop="20dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="20dp"
+                    android:text="LISTA DE TRATAMIENTOS"
+                    android:textColor="#ffffff"
+                    android:textSize="20sp" />
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/activity_menu_recycler"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:overScrollMode="never"
+                    android:scrollbarAlwaysDrawVerticalTrack="true"
+                    android:scrollbarStyle="outsideInset" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="20dp"
+                android:layout_marginLeft="30dp"
+                android:layout_marginRight="30dp"
+                android:layout_marginTop="20dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/activity_menu_detalle_tratamiento"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="5dp"
+                    android:text="DETALLE DEL TRATAMIENTO: "
+                    android:textColor="#ffffff"
+                    android:textSize="20sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:text="MODO MANUAL"
+                    android:textColor="#80ffffff"
+                    android:textSize="16sp" />
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="110dp"
+                    android:layout_marginBottom="2dp"
+                    android:background="@drawable/inner_shadow_bkg">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginLeft="30dp"
+                        android:text="RESISTIVO"
+                        android:textColor="#ffffff"
+                        android:textSize="28sp" />
+
+                    <TextView
+                        android:id="@+id/activity_menu_tiempo_resistivo"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginLeft="220dp"
+                        android:text="01:15"
+                        android:textColor="#ffffff"
+                        android:textSize="34sp"
+                        android:textStyle="bold" />
+
+                    <FrameLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical|right"
+                        >
+
+                        <ImageView
+                            android:id="@+id/activity_menu_resistivo_up"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:src="@drawable/arrow_up" />
+
+                        <ImageView
+                            android:id="@+id/activity_resistivo_down"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="50dp"
+                            android:src="@drawable/arrow_down" />
+
+                    </FrameLayout>
+                </FrameLayout>
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="110dp"
+                    android:background="@drawable/inner_shadow_bkg">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginLeft="30dp"
+                        android:text="CAPACITIVO"
+                        android:textColor="#ffffff"
+                        android:textSize="28sp" />
+
+                    <TextView
+                        android:id="@+id/activity_menu_tiempo_capacitivo"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginLeft="220dp"
+                        android:text="00:30"
+                        android:textColor="#ffffff"
+                        android:textSize="34sp"
+                        android:textStyle="bold" />
+
+                    <FrameLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical|right"
+                        >
+
+                        <ImageView
+                            android:id="@+id/activity_menu_capacitivo_up"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:src="@drawable/arrow_up" />
+
+                        <ImageView
+                            android:id="@+id/activity_menu_capacitivo_down"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="50dp"
+                            android:src="@drawable/arrow_down" />
+
+                    </FrameLayout>
+
+                </FrameLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp">
+
+                    <Button
+                        android:id="@+id/activity_menu_valores_defecto"
+                        android:layout_width="0dp"
+                        android:layout_height="60dp"
+                        android:layout_weight="1"
+                        android:layout_marginRight="15dp"
+                        android:background="@drawable/button_bkg"
+                        android:text="Valores por Defecto"
+                        android:textAllCaps="false"
+                        android:textColor="#ffffff"
+                        android:textSize="27sp" />
+
+                    <Button
+                        android:id="@+id/activity_menu_grabar"
+                        android:layout_width="160dp"
+                        android:layout_height="60dp"
+                        android:background="@drawable/button_bkg"
+                        android:text="Grabar"
+                        android:textAllCaps="false"
+                        android:textColor="#ffffff"
+                        android:textSize="27sp" />
+                </LinearLayout>
+
+                <Button
+                    android:id="@+id/activity_menu_ok"
+                    android:layout_width="160dp"
+                    android:layout_height="60dp"
+                    android:background="@drawable/button_bkg"
+                    android:layout_marginTop="15dp"
+                    android:text="OK"
+                    android:layout_gravity="right"
+                    android:textAllCaps="false"
+                    android:textColor="#000000"
+                    android:textSize="27sp" />
+
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+    </LinearLayout>
+</FrameLayout>
+
