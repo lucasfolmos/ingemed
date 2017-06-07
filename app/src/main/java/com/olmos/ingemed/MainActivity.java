@@ -3,7 +3,6 @@ package com.olmos.ingemed;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
@@ -12,9 +11,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.github.lzyzsd.circleprogress.ArcProgress;
-import com.olmos.ingemed.aplication.BaseApplication;
+
+import android_serialport_api.SerialPortActivity;
 import com.olmos.ingemed.utils.BusProvider;
 
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Timer;
@@ -24,7 +26,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends SerialPortActivity {
 
     public static final int REQUEST_CODE_TRATAMIENTO = 1232;
 
@@ -180,7 +182,6 @@ public class MainActivity extends AppCompatActivity {
 
         mainCapacitivoTxt.setEnabled(true);
         mainResistivoTxt.setEnabled(true);
-        clickResistivo();
     }
 
     @Override
@@ -195,17 +196,6 @@ public class MainActivity extends AppCompatActivity {
             mainTratamiento.setText(mNombreTratamiento);
             seguntosActuales = (int) ((mTiempoCapacitivo + mTiempoResistivo) / 1000);
             formatSecondsinScreen();
-
-            //indicator resistivo y capacitivo
-            disableCapacitivoAndResistivo();
-
-            //Disable/Enable buttons
-            mainBtnPotenciaUp.setEnabled(true);
-            mainBtnPontenciaDown.setEnabled(true);
-            mainBtnTiempoDown.setEnabled(false);
-            mainBtnTiempoUp.setEnabled(false);
-            mainResistivoTxt.setEnabled(false);
-            mainCapacitivoTxt.setEnabled(false);
         }
     }
 
@@ -219,26 +209,28 @@ public class MainActivity extends AppCompatActivity {
             if (!isTratamientoEnCurso) {
                 if (mNombreTratamiento == null || mNombreTratamiento.isEmpty()) {
                     //MODO MANUAL
-                    BaseApplication.getInstance().startModoManual(seguntosActuales * 1000, potenciaActual, tipoTratamiento == TRATAMIENT_RESISTIVO);
+                    startModoManual(seguntosActuales * 1000, potenciaActual, tipoTratamiento == TRATAMIENT_RESISTIVO);
                 } else {
-                    BaseApplication.getInstance().startModoPrograma(mTiempoCapacitivo, mTiempoResistivo, potenciaActual);
+                    startModoPrograma(mTiempoCapacitivo, mTiempoResistivo, potenciaActual, tipoTratamiento == TRATAMIENT_RESISTIVO);
                 }
                 isTratamientoEnCurso = true;
             } else {
-                BaseApplication.getInstance().play();
+                play();
             }
 
         } else {
             mainPlay.setImageResource(R.drawable.ic_play_arrow_black_48dp);
             isPlayActive = false;
+            pause();
         }
         mainModoManual.setEnabled(false);
         mainMenu.setEnabled(false);
 
-        mainBtnPotenciaUp.setEnabled(false);
-        mainBtnPontenciaDown.setEnabled(false);
-        mainBtnTiempoUp.setEnabled(false);
-        mainBtnTiempoDown.setEnabled(false);
+//        10/05/2017 - Dijeron que los botones de potencia y tiempo deben estar activos siempre
+//        mainBtnPotenciaUp.setEnabled(false);
+//        mainBtnPontenciaDown.setEnabled(false);
+//        mainBtnTiempoUp.setEnabled(false);
+//        mainBtnTiempoDown.setEnabled(false);
 
 
     }
@@ -251,25 +243,30 @@ public class MainActivity extends AppCompatActivity {
 
         mainBtnPotenciaUp.setEnabled(true);
         mainBtnPontenciaDown.setEnabled(true);
-        if (mNombreTratamiento == null || mNombreTratamiento.isEmpty()) {
-            mainBtnTiempoUp.setEnabled(true);
-            mainBtnTiempoDown.setEnabled(true);
-        } else {
-            mainBtnTiempoUp.setEnabled(false);
-            mainBtnTiempoDown.setEnabled(false);
-        }
+
+//        10/05/2017 - Dijeron que los botones de potencia y tiempo deben estar activos siempre
+//        if (mNombreTratamiento == null || mNombreTratamiento.isEmpty()) {
+//            mainBtnTiempoUp.setEnabled(true);
+//            mainBtnTiempoDown.setEnabled(true);
+//        } else {
+//            mainBtnTiempoUp.setEnabled(false);
+//            mainBtnTiempoDown.setEnabled(false);
+//        }
 
         mainPlay.setImageResource(R.drawable.ic_play_arrow_black_48dp);
         isPlayActive = false;
         isTratamientoEnCurso = false;
+        stop();
     }
 
     private void btnPotenciaUp() {
-        if (potenciaActual >= 90) {
+        if (potenciaActual >= 99) {
             potenciaActual = 100;
         } else {
-            potenciaActual += 10;
+            potenciaActual += 1;
         }
+
+        sendPot(potenciaActual);
 
         runOnUiThread(new Runnable() {
             @Override
@@ -281,11 +278,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void btnPotenciaDown() {
-        if (potenciaActual <= 10) {
+        if (potenciaActual <= 1) {
             potenciaActual = 0;
         } else {
-            potenciaActual -= 10;
+            potenciaActual -= 1;
         }
+
+        sendPot(potenciaActual);
 
         runOnUiThread(new Runnable() {
             @Override
@@ -298,6 +297,9 @@ public class MainActivity extends AppCompatActivity {
 
     private void btnTiempoUp() {
         seguntosActuales += 60;
+
+        sendTime(seguntosActuales);
+
         formatSecondsinScreen();
     }
 
@@ -307,6 +309,8 @@ public class MainActivity extends AppCompatActivity {
         } else {
             seguntosActuales -= 60;
         }
+
+        sendTime(seguntosActuales);
 
         formatSecondsinScreen();
     }
@@ -330,6 +334,8 @@ public class MainActivity extends AppCompatActivity {
         mainCapacitivoTxt.setTextColor(getResources().getColor(R.color.optionNotSelected));
         mainCapacitivoLine.setVisibility(View.INVISIBLE);
         tipoTratamiento = TRATAMIENT_RESISTIVO;
+
+        sendCommand(MODO_RES_BYTES);
     }
 
     public void clickCapacitivo() {
@@ -338,6 +344,8 @@ public class MainActivity extends AppCompatActivity {
         mainCapacitivoTxt.setTextColor(getResources().getColor(R.color.white));
         mainCapacitivoLine.setVisibility(View.VISIBLE);
         tipoTratamiento = TRATAMIENT_CAPACITIVO;
+
+        sendCommand(MODO_CAP_BYTES);
     }
 
     public void disableCapacitivoAndResistivo() {
@@ -348,6 +356,16 @@ public class MainActivity extends AppCompatActivity {
 
         mainCapacitivoTxt.setEnabled(false);
         mainResistivoTxt.setEnabled(false);
+    }
+
+    private void disableButtons() {
+        //Disable/Enable buttons
+        mainBtnPotenciaUp.setEnabled(true);
+        mainBtnPontenciaDown.setEnabled(true);
+        mainBtnTiempoDown.setEnabled(false);
+        mainBtnTiempoUp.setEnabled(false);
+        mainResistivoTxt.setEnabled(false);
+        mainCapacitivoTxt.setEnabled(false);
     }
 
     private void initializeLongClicks() {
@@ -432,5 +450,159 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    public void startModoManual(long milliseconds, int potenciaActual, boolean isResistivo) {
+        if (isResistivo) {
+            sendCommand(MODO_RES_BYTES);
+        } else {
+            sendCommand(MODO_CAP_BYTES);
+        }
+        sendPot(potenciaActual);
+        play();
+    }
 
+    public void startModoPrograma(long mTiempoCapacitivo, long mTiempoResistivo, int potencia, boolean isResistivo) {
+        if (isResistivo) {
+            sendCommand(MODO_RES_BYTES);
+        } else {
+            sendCommand(MODO_CAP_BYTES);
+        }
+        sendPot(potenciaActual);
+        play();
+    }
+
+    public void play() {
+        sendCommand(PLAY_BYTES);
+    }
+
+    public void pause() {
+        sendCommand(PAUSE_BYTES);
+    }
+
+    public void stop() {
+        sendCommand(STOP_BYTES);
+    }
+
+    private  void sendPot(int number) {
+        number = (MAX_POT_VALUE * number)/100;
+        String value = String.format("%04d", number);
+        byte[] valueBytes = {'0','0','0','0'};
+        try {
+            valueBytes = value.getBytes("utf-8");
+        } catch(UnsupportedEncodingException e) {
+
+        }
+        sendBytes(POT_BYTES, POT_COMMAND_SIZE);
+        sendBytes(valueBytes, 4);
+    }
+
+    private  void sendTime(int number) {
+        String value = String.format("%04d", number/60);   // minutos
+        byte[] valueBytes = {'0','0','0','0'};
+        try {
+            valueBytes = value.getBytes("utf-8");
+        } catch(UnsupportedEncodingException e) {
+
+        }
+        sendBytes(TIME_BYTES, TIME_COMMAND_SIZE);
+        sendBytes(valueBytes, 4);
+    }
+
+    char mTempValue;
+    int mBytesOfCommand = 0;
+    byte[] mInBuffer = new byte[10];
+
+    private static final byte[] MODO_CAP_BYTES = { '0','C','0','1','0','0','0','0','0','1' };
+    private static final byte[] MODO_RES_BYTES = {'0','C','0','1','0','0','0','0','0','2'};
+    private static final byte[] PLAY_BYTES = {'0','C','0','3','0','0','0','0','0','1'};
+    private static final byte[] PAUSE_BYTES = {'0','C','0','3','0','0','0','0','0','2'};
+    private static final byte[] STOP_BYTES = {'0','C','0','3','0','0','0','0','0','3'};
+    private static final byte[] POT_BYTES = {'0','C','0','2','0','0'};
+    private static final byte[] TIME_BYTES = {'0','C','0','4','0','0'};
+    private static final byte[] TEMP_BYTES = {'1','I','0','1','0','0'};
+    private static final byte[] POTENCIA_BYTES = {'1','I','0','2','0','0'};
+    private static final byte[] CORRIENTE_BYTES = {'1','I','0','3','0','0'};
+    private static final byte[] IMPEDANCIA_BYTES = {'1','I','0','4','0','0'};
+    private static final byte[] COMMAND_START_BYTES = {'0','C','0'};
+    private static final byte[] INFO_START_BYTES = {'1','I','0'};
+    private static final int FULL_COMMAND_SIZE = 10;
+    private static final int TEMP_COMMAND_SIZE = 6;
+    private static final int POT_COMMAND_SIZE = 6;
+    private static final int TIME_COMMAND_SIZE = 6;
+
+    private static final int MAX_POT_VALUE = 255;
+
+    private void sendCommand(byte[] command) {
+        sendBytes(command, FULL_COMMAND_SIZE);
+    }
+
+    private void sendBytes(byte[] values, int count) {
+        for (int i = 0; i < count; i++) {
+            sendByte(values[i]);
+        }
+    }
+
+    private void sendByte(byte value) {
+        try {
+            if (mOutputStream != null) {
+                mOutputStream.write(value);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    protected void onDataReceived(byte[] buffer, int size) {
+        int i;
+        for (i = 0; i < size; i++) {
+            checkIncomingBytes(buffer[i]);
+        }
+    }
+
+    private void checkIncomingBytes(byte data) {
+        if (mBytesOfCommand < 3) {
+            //debug if (COMMAND_START_BYTES[mBytesOfCommand] == data) {
+            if (INFO_START_BYTES[mBytesOfCommand] == data) {
+                mInBuffer[mBytesOfCommand] = data;
+                mBytesOfCommand++;
+            } else {
+                mBytesOfCommand = 0;
+            }
+        } else {
+            if (mBytesOfCommand < 10) {
+                mInBuffer[mBytesOfCommand] = data;
+                mBytesOfCommand++;
+                if (mBytesOfCommand >= 10) {
+                    mBytesOfCommand = 0;
+
+                    runOnUiThread(new Runnable() {
+                        public void run() {
+                            byte infoType = mInBuffer[3];
+                            String strValue = "--";
+                            try {
+                                for (int i = 0; i < 4; i++) {
+                                    mInBuffer[i] = '0';
+                                }
+                                String tempText = new String(mInBuffer, "utf-8");
+                                int value = Integer.parseInt(tempText);
+                                strValue = String.valueOf(value);
+                            } catch(Exception e) {
+                                strValue = "--";
+                            }
+
+                            if (infoType == POTENCIA_BYTES[3] && mainPotenciaLeida != null) {
+                                mainPotenciaLeida.setText(strValue);
+                            }
+                            if (infoType == CORRIENTE_BYTES[3] && mainCorrienteLeida != null) {
+                                mainCorrienteLeida.setText(strValue);
+                            }
+                            if (infoType == IMPEDANCIA_BYTES[3] && mainImpedanciaLeida != null) {
+                                mainImpedanciaLeida.setText(strValue);
+                            }
+                        }
+                    });
+                }
+            }
+        }
+    }
 }

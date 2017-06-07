@@ -1,18 +1,25 @@
 package com.olmos.ingemed.aplication;
 
 import android.app.Application;
+import android.util.Log;
 
 import com.olmos.ingemed.InterfaceDevice;
+import android_serialport_api.SerialPort;
+import android_serialport_api.SerialPortFinder;
 import com.olmos.ingemed.utils.BusProvider;
+
+import java.io.File;
+import java.io.IOException;
+import java.security.InvalidParameterException;
 
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 
 public class BaseApplication extends Application {
-
-
     private static BaseApplication instance;
     InterfaceDevice interfaceDevice;
+    public SerialPortFinder mSerialPortFinder = new SerialPortFinder();
+    private SerialPort mSerialPort = null;
 
 
     public BaseApplication() {
@@ -47,15 +54,26 @@ public class BaseApplication extends Application {
         this.interfaceDevice = interfaceDevice;
     }
 
-    public void startModoManual(long milliseconds, int potenciaActual, boolean isResistivo) {
+    public SerialPort getSerialPort() throws SecurityException, IOException, InvalidParameterException {
+        if (mSerialPort == null) {
+            int baudrate = 115200;
+            String path = "/dev/ttyO1";
 
+            Log.d("Debug", "Opening serial port: " + path + " bps: " + baudrate );
+			/* Open the serial port */
+            openSerialPort(path, baudrate);
+        }
+        return mSerialPort;
     }
 
-    public void startModoPrograma(long mTiempoCapacitivo, long mTiempoResistivo, int potencia) {
-
+    public void openSerialPort(String path, int baudrate) throws IOException {
+        mSerialPort = new SerialPort(new File(path), baudrate, 0);
     }
 
-    public void play() {
-
+    public void closeSerialPort() {
+        if (mSerialPort != null) {
+            mSerialPort.close();
+            mSerialPort = null;
+        }
     }
 }

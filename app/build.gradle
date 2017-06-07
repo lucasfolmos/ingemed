@@ -1,7 +1,5 @@
 apply plugin: 'com.android.application'
 apply plugin: 'realm-android'
-
-
 android {
     signingConfigs {
         releaseSigning {
@@ -16,7 +14,7 @@ android {
     defaultConfig {
         applicationId "com.olmos.ingemed"
         minSdkVersion 16
-        targetSdkVersion 25
+        targetSdkVersion 16
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -28,8 +26,9 @@ android {
             signingConfig signingConfigs.releaseSigning
         }
     }
+    productFlavors {
+    }
 }
-
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
@@ -46,4 +45,5 @@ dependencies {
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.5.1'
     compile 'io.realm:android-adapters:1.3.0'
     testCompile 'junit:junit:4.12'
+    compile 'com.android.support:support-v4:25.0.0-alpha1'
 }
