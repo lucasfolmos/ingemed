@@ -194,7 +194,14 @@ public class MainActivity extends SerialPortActivity {
             mTiempoResistivo = data.getLongExtra(BUNDLE_TIEMPO_RESISTIR, 0);
 
             mainTratamiento.setText(mNombreTratamiento);
-            seguntosActuales = (int) ((mTiempoCapacitivo + mTiempoResistivo) / 1000);
+            if (mTiempoCapacitivo != 0) {
+                seguntosActuales = (int) ((mTiempoResistivo) / 1000);
+                clickResistivo();
+            } else {
+                seguntosActuales = (int) ((mTiempoCapacitivo) / 1000);
+                clickCapacitivo();
+            }
+            disableCapacitivoAndResistivo();
             formatSecondsinScreen();
         }
     }
@@ -296,7 +303,10 @@ public class MainActivity extends SerialPortActivity {
     }
 
     private void btnTiempoUp() {
-        seguntosActuales += 60;
+        if (seguntosActuales >= 59 * 60) {
+        } else {
+            seguntosActuales += 60;
+        }
 
         sendTime(seguntosActuales);
 
@@ -317,7 +327,7 @@ public class MainActivity extends SerialPortActivity {
 
     private void formatSecondsinScreen() {
         Date date = new Date((long) (seguntosActuales * 1000));
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm:ss");
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("mm:ss");
         simpleDateFormat.setTimeZone(java.util.TimeZone.getTimeZone("GMT"));
         final String formattedDate = simpleDateFormat.format(date);
         runOnUiThread(new Runnable() {
@@ -349,11 +359,6 @@ public class MainActivity extends SerialPortActivity {
     }
 
     public void disableCapacitivoAndResistivo() {
-        mainResistivoTxt.setTextColor(getResources().getColor(R.color.optionNotSelected));
-        mainResistivoLine.setVisibility(View.INVISIBLE);
-        mainCapacitivoTxt.setTextColor(getResources().getColor(R.color.optionNotSelected));
-        mainCapacitivoLine.setVisibility(View.INVISIBLE);
-
         mainCapacitivoTxt.setEnabled(false);
         mainResistivoTxt.setEnabled(false);
     }

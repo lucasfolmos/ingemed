@@ -42,22 +42,25 @@
             android:orientation="horizontal">
 
             <FrameLayout
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
+                android:layout_weight="6"
                 android:layout_height="match_parent"
                 android:orientation="vertical">
 
                 <LinearLayout
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="top"
-                    android:layout_marginTop="50dp"
+                    android:layout_marginTop="35dp"
                     android:orientation="horizontal">
 
                     <LinearLayout
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="48dp"
                         android:layout_marginTop="20dp"
+                        android:gravity="center_horizontal"
                         android:orientation="vertical">
 
                         <TextView
@@ -75,9 +78,9 @@
 
                             <com.github.lzyzsd.circleprogress.ArcProgress
                                 android:id="@+id/main_potencia_progress"
-                                android:layout_width="214dp"
-                                android:layout_height="204dp"
-                                android:layout_marginBottom="20dp"
+                                android:layout_width="244dp"
+                                android:layout_height="224dp"
+                                android:layout_marginBottom="55dp"
                                 custom:arc_finished_color="#178880"
                                 custom:arc_progress="55"
                                 custom:arc_stroke_width="10dp"
@@ -90,7 +93,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center"
-                                android:layout_marginBottom="20dp"
+                                android:layout_marginBottom="35dp"
                                 android:text="55%"
                                 android:textColor="#ffffff"
                                 android:textSize="38sp"
@@ -106,14 +109,22 @@
                                     android:id="@+id/main_btn_potencia_up"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:layout_marginBottom="25dp"
-                                    android:src="@drawable/arrow_up" />
+                                    android:layout_marginBottom="20dp"
+                                    android:src="@drawable/arrow_up"
+                                    android:paddingTop="15dp"
+                                    android:paddingBottom="12dp"
+                                    android:scaleX="1.4"
+                                    android:scaleY="1.4"/>
 
                                 <ImageView
                                     android:id="@+id/main_btn_pontencia_down"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:src="@drawable/arrow_down" />
+                                    android:src="@drawable/arrow_down"
+                                    android:paddingTop="12dp"
+                                    android:paddingBottom="15dp"
+                                    android:scaleX="1.4"
+                                    android:scaleY="1.4" />
 
                             </LinearLayout>
                         </FrameLayout>
@@ -121,10 +132,12 @@
                     </LinearLayout>
 
                     <LinearLayout
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="48dp"
                         android:layout_marginTop="20dp"
+                        android:gravity="center_horizontal"
                         android:orientation="vertical">
 
                         <TextView
@@ -142,9 +155,9 @@
 
                             <com.github.lzyzsd.circleprogress.ArcProgress
                                 android:id="@+id/main_time_progress"
-                                android:layout_width="214dp"
-                                android:layout_height="204dp"
-                                android:layout_marginBottom="20dp"
+                                android:layout_width="244dp"
+                                android:layout_height="224dp"
+                                android:layout_marginBottom="55dp"
                                 custom:arc_finished_color="#178880"
                                 custom:arc_progress="55"
                                 custom:arc_stroke_width="10dp"
@@ -157,7 +170,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center"
-                                android:layout_marginBottom="20dp"
+                                android:layout_marginBottom="35dp"
                                 android:text="0:00:00"
                                 android:textColor="#ffffff"
                                 android:textSize="38sp"
@@ -173,14 +186,22 @@
                                     android:id="@+id/main_btn_tiempo_up"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:layout_marginBottom="25dp"
-                                    android:src="@drawable/arrow_up" />
+                                    android:layout_marginBottom="20dp"
+                                    android:src="@drawable/arrow_up"
+                                    android:paddingTop="15dp"
+                                    android:paddingBottom="12dp"
+                                    android:scaleX="1.4"
+                                    android:scaleY="1.4" />
 
                                 <ImageView
                                     android:id="@+id/main_btn_tiempo_down"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:src="@drawable/arrow_down" />
+                                    android:src="@drawable/arrow_down"
+                                    android:paddingTop="12dp"
+                                    android:paddingBottom="15dp"
+                                    android:scaleX="1.4"
+                                    android:scaleY="1.4" />
 
                             </LinearLayout>
                         </FrameLayout>
@@ -299,7 +320,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="48dp"
                     android:layout_gravity="bottom"
-                    android:layout_marginBottom="75dp"
+                    android:layout_marginBottom="50dp"
                     android:orientation="horizontal">
 
                     <ImageButton
@@ -341,7 +362,8 @@
             </FrameLayout>
 
             <FrameLayout
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
+                android:layout_weight="4"
                 android:layout_height="match_parent"
                 android:layout_marginLeft="30dp"
                 android:layout_marginRight="20dp"
