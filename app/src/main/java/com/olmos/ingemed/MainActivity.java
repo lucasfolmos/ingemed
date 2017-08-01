@@ -33,6 +33,7 @@ public class MainActivity extends SerialPortActivity {
     public static final String BUNDLE_TIEMPO_CAPACITIVO = "com.olmos.ingemed.BUNDLE_TIEMPO_CAPACITIVO";
     public static final String BUNDLE_TIEMPO_RESISTIR = "com.olmos.ingemed.BUNDLE_TIEMPO_RESISTIR";
     public static final String BUNDLE_NOMBRE_TRATAMIENTO = "com.olmos.ingemed.BUNDLE_NOMBRE_TRATAMIENTO";
+    public static final String BUNDLE_ES_CAPACITIVO_PRIMERO = "com.olmos.ingemed.BUNDLE_ES_CAPACITIVO_PRIMERO";
     public static final int TRATAMIENT_GENERAL = 0;
     public static final int TRATAMIENT_CAPACITIVO = 1;
     public static final int TRATAMIENT_RESISTIVO = 2;
@@ -42,6 +43,7 @@ public class MainActivity extends SerialPortActivity {
     String mNombreTratamiento;
     long mTiempoCapacitivo;
     long mTiempoResistivo;
+    boolean mCapacitivoPrimero;
 
     boolean isTratamientoEnCurso = false;
     boolean isPlayActive = false;
@@ -122,7 +124,9 @@ public class MainActivity extends SerialPortActivity {
         formatSecondsinScreen();
         mainTimeProgress.setProgress(100);
 
-        clickResistivo();
+        displayOk();
+
+        clickResistivo(true);
 
         mainTratamiento.setText("--");
 
@@ -147,10 +151,10 @@ public class MainActivity extends SerialPortActivity {
                 btnTiempoDown();
                 break;
             case R.id.main_resistivo_txt:
-                clickResistivo();
+                clickResistivo(true);
                 break;
             case R.id.main_capacitivo_txt:
-                clickCapacitivo();
+                clickCapacitivo(true);
                 break;
             case R.id.main_play:
                 clickPlay();
@@ -190,17 +194,21 @@ public class MainActivity extends SerialPortActivity {
 
         if (requestCode == REQUEST_CODE_TRATAMIENTO && resultCode == Activity.RESULT_OK) {
             mNombreTratamiento = data.getStringExtra(BUNDLE_NOMBRE_TRATAMIENTO);
-            mTiempoCapacitivo = data.getLongExtra(BUNDLE_TIEMPO_CAPACITIVO, 0);
-            mTiempoResistivo = data.getLongExtra(BUNDLE_TIEMPO_RESISTIR, 0);
+            mCapacitivoPrimero = data.getBooleanExtra(BUNDLE_ES_CAPACITIVO_PRIMERO, false);
+            if(mCapacitivoPrimero) {
+                mTiempoCapacitivo = data.getLongExtra(BUNDLE_TIEMPO_RESISTIR, 0);
+                mTiempoResistivo = data.getLongExtra(BUNDLE_TIEMPO_CAPACITIVO, 0);
+                seguntosActuales = (int) ((mTiempoCapacitivo) / 1000);
+                clickCapacitivo(false);
+            } else {
+                mTiempoCapacitivo = data.getLongExtra(BUNDLE_TIEMPO_CAPACITIVO, 0);
+                mTiempoResistivo = data.getLongExtra(BUNDLE_TIEMPO_RESISTIR, 0);
+                seguntosActuales = (int) ((mTiempoResistivo) / 1000);
+                clickResistivo(false);
+            }
 
             mainTratamiento.setText(mNombreTratamiento);
-            if (mTiempoCapacitivo != 0) {
-                seguntosActuales = (int) ((mTiempoResistivo) / 1000);
-                clickResistivo();
-            } else {
-                seguntosActuales = (int) ((mTiempoCapacitivo) / 1000);
-                clickCapacitivo();
-            }
+
             disableCapacitivoAndResistivo();
             formatSecondsinScreen();
         }
@@ -218,7 +226,7 @@ public class MainActivity extends SerialPortActivity {
                     //MODO MANUAL
                     startModoManual(seguntosActuales * 1000, potenciaActual, tipoTratamiento == TRATAMIENT_RESISTIVO);
                 } else {
-                    startModoPrograma(mTiempoCapacitivo, mTiempoResistivo, potenciaActual, tipoTratamiento == TRATAMIENT_RESISTIVO);
+                    startModoPrograma(mTiempoCapacitivo, mTiempoResistivo, potenciaActual, mCapacitivoPrimero);
                 }
                 isTratamientoEnCurso = true;
             } else {
@@ -338,24 +346,28 @@ public class MainActivity extends SerialPortActivity {
         });
     }
 
-    public void clickResistivo() {
+    public void clickResistivo(boolean send) {
         mainResistivoTxt.setTextColor(getResources().getColor(R.color.white));
         mainResistivoLine.setVisibility(View.VISIBLE);
         mainCapacitivoTxt.setTextColor(getResources().getColor(R.color.optionNotSelected));
         mainCapacitivoLine.setVisibility(View.INVISIBLE);
         tipoTratamiento = TRATAMIENT_RESISTIVO;
 
-        sendCommand(MODO_RES_BYTES);
+        if(send) {
+            sendCommand(MODO_RES_BYTES);
+        }
     }
 
-    public void clickCapacitivo() {
+    public void clickCapacitivo(boolean send) {
         mainResistivoTxt.setTextColor(getResources().getColor(R.color.optionNotSelected));
         mainResistivoLine.setVisibility(View.INVISIBLE);
         mainCapacitivoTxt.setTextColor(getResources().getColor(R.color.white));
         mainCapacitivoLine.setVisibility(View.VISIBLE);
         tipoTratamiento = TRATAMIENT_CAPACITIVO;
 
-        sendCommand(MODO_CAP_BYTES);
+        if(send) {
+            sendCommand(MODO_CAP_BYTES);
+        }
     }
 
     public void disableCapacitivoAndResistivo() {
@@ -465,14 +477,24 @@ public class MainActivity extends SerialPortActivity {
         play();
     }
 
-    public void startModoPrograma(long mTiempoCapacitivo, long mTiempoResistivo, int potencia, boolean isResistivo) {
-        if (isResistivo) {
-            sendCommand(MODO_RES_BYTES);
-        } else {
+    public void startModoPrograma(long mTiempoCapacitivo, long mTiempoResistivo, int potencia, boolean isCapacitivoPrimero) {
+        if (isCapacitivoPrimero) {
             sendCommand(MODO_CAP_BYTES);
+            sendTime((int) ((mTiempoCapacitivo) / 1000));
+            sendCommand(MODO_RES_BYTES);
+            sendTime((int) ((mTiempoResistivo) / 1000));
+        } else {
+            sendCommand(MODO_RES_BYTES);
+            sendTime((int) ((mTiempoResistivo) / 1000));
+            sendCommand(MODO_CAP_BYTES);
+            sendTime((int) ((mTiempoCapacitivo) / 1000));
         }
         sendPot(potenciaActual);
         play();
+    }
+
+    public void displayOk() {
+        sendCommand(DISPLAY_OK);
     }
 
     public void play() {
@@ -498,6 +520,7 @@ public class MainActivity extends SerialPortActivity {
         }
         sendBytes(POT_BYTES, POT_COMMAND_SIZE);
         sendBytes(valueBytes, 4);
+        sendByte((byte)0x0a);
     }
 
     private  void sendTime(int number) {
@@ -510,12 +533,14 @@ public class MainActivity extends SerialPortActivity {
         }
         sendBytes(TIME_BYTES, TIME_COMMAND_SIZE);
         sendBytes(valueBytes, 4);
+        sendByte((byte)0x0a);
     }
 
     char mTempValue;
     int mBytesOfCommand = 0;
     byte[] mInBuffer = new byte[10];
 
+    private static final byte[] DISPLAY_OK = { '0','I','0','0','0','0','0','0','0','1' };
     private static final byte[] MODO_CAP_BYTES = { '0','C','0','1','0','0','0','0','0','1' };
     private static final byte[] MODO_RES_BYTES = {'0','C','0','1','0','0','0','0','0','2'};
     private static final byte[] PLAY_BYTES = {'0','C','0','3','0','0','0','0','0','1'};
@@ -538,6 +563,7 @@ public class MainActivity extends SerialPortActivity {
 
     private void sendCommand(byte[] command) {
         sendBytes(command, FULL_COMMAND_SIZE);
+        sendByte((byte)0x0a);
     }
 
     private void sendBytes(byte[] values, int count) {

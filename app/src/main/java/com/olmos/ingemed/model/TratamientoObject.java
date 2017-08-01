@@ -11,6 +11,15 @@ public class TratamientoObject extends RealmObject {
     private long milisecondsCapacitivo;
     private long defaultMilisecondsCapacitivo;
     private long defaultMilisecondsResistivo;
+    private boolean capacitivoPrimero;
+
+    public boolean getCapacitivoPrimero() {
+        return capacitivoPrimero;
+    }
+
+    public void setCapacitivoPrimero(boolean esCapacitivoPrimero) {
+        capacitivoPrimero = esCapacitivoPrimero;
+    }
 
     public String getName() {
         return name;
