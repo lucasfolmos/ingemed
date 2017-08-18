@@ -521,6 +521,7 @@ public class MainActivity extends SerialPortActivity {
         sendBytes(POT_BYTES, POT_COMMAND_SIZE);
         sendBytes(valueBytes, 4);
         sendByte((byte)0x0a);
+        sendByte((byte)0x0d);
     }
 
     private  void sendTime(int number) {
@@ -534,6 +535,7 @@ public class MainActivity extends SerialPortActivity {
         sendBytes(TIME_BYTES, TIME_COMMAND_SIZE);
         sendBytes(valueBytes, 4);
         sendByte((byte)0x0a);
+        sendByte((byte)0x0d);
     }
 
     char mTempValue;
@@ -564,6 +566,7 @@ public class MainActivity extends SerialPortActivity {
     private void sendCommand(byte[] command) {
         sendBytes(command, FULL_COMMAND_SIZE);
         sendByte((byte)0x0a);
+        sendByte((byte)0x0d);
     }
 
     private void sendBytes(byte[] values, int count) {
